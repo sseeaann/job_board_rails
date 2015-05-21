@@ -1,0 +1,80 @@
+<nav class="navbar navbar-default">
+	<div class="container">
+		<ul class="nav navbar-nav navbar-left">
+			<li><a href="/postings"><button  class="btn btn-default">Back</button></a></li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li><a href="/logout"><button class="btn btn-danger">Logout</button></a></li>
+		</ul>
+	</div>
+</nav>
+<div class="container">
+	<ul>
+		<h4>First Name: <%= @user.first_name %></h4>
+		<h4>Alias: <%= @user.alias %></h4>
+		<h4>Email: <%= @user.email %></h4>
+	</ul>
+	<hr>
+	<ul>
+		<h5>Postings Counter: <%= @posting_count %></h5>
+		<h5>Likes Counter: <%= @user.likes.count %></h5>
+	</ul>
+	<hr>
+	
+	<div class="row">
+		<div class="col-md-6">
+		<h2><%= @user.first_name %>'s Postings:</h2>
+		<hr>
+		<% @user.postings.each do |post| %>
+			<div class="panel panel-warning">
+				<div class="panel-heading">
+					<p>Posted by: <a href="/users/<%=post.user.id%>"><%= post.user.alias %></a></p>
+				</div>
+				<div class="panel-body">
+					<h4>
+						<% if current_user.id == post.user.id %>
+						<a href="/postings/<%= post.id %>" class="btn btn-danger btn-xs" data-method="delete"><span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span></a>
+					<% end %>
+						<%= post.title %>
+					</h4>
+					<h5><%= post.description %></h5>
+				</div>
+				<div class="panel-footer">
+					<p>Posted: <%= time_ago_in_words(post.created_at.localtime) %> ago </p>
+					<p>
+					<% if current_user.id != post.user.id %>
+						<%= simple_form_for(:like, url: '/likes' ) do |f| %>
+						<%= f.input :user_id, as: :hidden, input_html: {value: "#{current_user.id}"} %>
+						<%= f.input :posting_id, as: :hidden, input_html: {value: "#{post.id}"}%>
+						<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Like</button><small><mark><%= post.likes.count %> likes</mark></small></p>
+						<% end %>
+					<% end %>
+				</div>
+			</div>
+		<% end %>
+		</div>	
+
+		<div class="col-md-6">
+			<h2><%= @user.first_name %>'s Likes:</h2>
+			<hr>
+			<% @liked_postings.each do |post| %>
+			<div class="panel panel-info">
+				<div class="panel-heading">
+					<p>Posted by: <a href="/users/<%=post.user.id%>"><%= post.user.alias %></a></p>
+				</div>
+				<div class="panel-body">
+					<% if current_user.id == post.user.id %>
+						<a href="/postings/<%= post.id %>" class="btn btn-danger btn-xs" data-method="delete">Remove</a>
+					<% end %>
+					<h4><%= post.title %></h4>
+					<h5><%= post.description %></h5>
+				</div>
+				<div class="panel-footer">
+					<p>Posted: <%= time_ago_in_words(post.created_at.localtime) %> ago <small><mark><%= post.likes.count %> likes</mark></small></p>
+				</div>
+			</div>
+			<% end %>
+		</div>
+
+	</div>
+</div>

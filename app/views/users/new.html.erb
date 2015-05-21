@@ -1,0 +1,26 @@
+<div class="container">
+	
+	
+	<div class="col-xs-5">
+		<h1>Signup!</h1>
+		<%= simple_form_for @user, url: '/users' do |f| %>
+			<%= f.input :first_name, placeholder: "First Name" %>
+			<%= f.input :alias, placeholder: "Alias" %>
+			<%= f.input :email, placeholder: "email@email.com" %>
+			<%= f.input :password, placeholder: "password" %>
+			<%= f.input :password_confirmation, placeholder: "password" %>
+			<%= f.button :submit, "Register" %>
+		<% end %>
+	</div>
+	<div class="col-xs-5 col-xs-offset-1">
+		<h1>Login!</h1>
+		<% if flash.key? ('login_errors') %>
+			<li class="list-group-item list-group-item-danger"><%= flash[:login_errors] %></li>
+		<% end %>
+		<%= simple_form_for :session, url: '/login' do |f| %>
+			<%= f.input :email, placeholder: "email@email.com" %>
+			<%= f.input :password, placeholder: "password" %>
+			<%= f.button :submit, "Sign in" %>
+		<% end %>
+	</div>
+</div>

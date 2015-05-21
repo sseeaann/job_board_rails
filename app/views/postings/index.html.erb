@@ -1,0 +1,50 @@
+<nav class="navbar navbar-default">
+	<div class="container">
+		<ul class="nav navbar-nav navbar-right">
+			<li><a href="/logout"><button class="btn btn-danger">Logout</button></a></li>
+		</ul>
+	</div>
+</nav>
+<div class="container">
+	<h1>Welcome <%= @current_user.first_name %></h1>
+	<h3>...or should I say, "<%= @current_user.alias %>"</h3>
+	<hr>
+
+	<%= simple_form_for @posting, url: '/postings' do |f| %>
+		<%= f.input :user_id, as: :hidden, input_html: {value: "#{current_user.id}"} %>
+		<%= f.input :title, placeholder: "Job posting title" %>
+		<%= f.input :description, as: :text, placeholder: "Job's description" %>
+		<%= f.button :submit, "Post", class: "btn-primary" %>
+	<% end %>
+	<hr>
+
+	<% @postings.each do |post| %>
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="panel panel-warning">
+				<div class="panel-heading">
+					<p>Posted by: <a href="/users/<%=post.user.id%>"><%= post.user.alias %></a></p>
+				</div>
+				<div class="panel-body">
+					<% if current_user.id == post.user.id %>
+						<a href="/postings/<%= post.id %>" class="btn btn-danger btn-xs" data-method="delete">Remove</a>
+					<% end %>
+					<h4><%= post.title %></h4>
+					<h5><%= post.description %></h5>
+				</div>
+				<div class="panel-footer">
+					<p>Posted: <%= time_ago_in_words(post.created_at.localtime) %> ago </p>
+					<p>
+					<% if current_user.id != post.user.id %>
+					<%= simple_form_for(:like, url: '/likes' ) do |f| %>
+					<%= f.input :user_id, as: :hidden, input_html: {value: "#{current_user.id}"} %>
+					<%= f.input :posting_id, as: :hidden, input_html: {value: "#{post.id}"}%>
+					<button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-thumbs-up" aria-hidden="true"></span> Like</button><small><mark><%= post.likes.count %> likes</mark></small></p>
+					<% end %>
+					<% end %>
+				</div>
+			</div>
+		</div>
+	</div>
+	<% end %>
+</div>
